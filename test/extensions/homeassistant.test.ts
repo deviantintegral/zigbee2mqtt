@@ -1484,6 +1484,7 @@ describe("Extension: HomeAssistant", () => {
             stringify({
                 color: {hue: 0, saturation: 100, h: 0, s: 100},
                 color_mode: "hs",
+                color_temp_startup: null,
                 effect: null,
                 linkquality: null,
                 state: null,
@@ -1507,6 +1508,7 @@ describe("Extension: HomeAssistant", () => {
             stringify({
                 color: {x: 0.4576, y: 0.41},
                 color_mode: "xy",
+                color_temp_startup: null,
                 effect: null,
                 linkquality: null,
                 state: null,
@@ -1528,6 +1530,7 @@ describe("Extension: HomeAssistant", () => {
         expect(mockMQTTPublishAsync).toHaveBeenCalledWith(
             "zigbee2mqtt/bulb_color",
             stringify({
+                color_temp_startup: null,
                 linkquality: null,
                 effect: null,
                 state: "ON",
@@ -1637,6 +1640,7 @@ describe("Extension: HomeAssistant", () => {
             stringify({
                 state: "ON",
                 color_options: null,
+                color_temp_startup: null,
                 brightness: 50,
                 color_temp: 370,
                 effect: null,
@@ -1677,6 +1681,7 @@ describe("Extension: HomeAssistant", () => {
             stringify({
                 state: "ON",
                 color_options: null,
+                color_temp_startup: null,
                 brightness: 50,
                 color_temp: 370,
                 effect: null,
@@ -2621,7 +2626,7 @@ describe("Extension: HomeAssistant", () => {
             stringify(payload),
             {retain: true, qos: 1},
         );
-        expect(mockMQTTPublishAsync).toHaveBeenCalledTimes(7);
+        expect(mockMQTTPublishAsync).toHaveBeenCalledTimes(8);
         expect(mockMQTTPublishAsync).toHaveBeenCalledWith("zigbee2mqtt/bridge/health", expect.any(String), expect.any(Object));
     });
 

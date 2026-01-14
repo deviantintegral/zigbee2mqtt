@@ -131,6 +131,7 @@ const NUMERIC_DISCOVERY_LOOKUP: {[s: string]: KeyValue} = {
     calibration: {entity_category: "config", icon: "mdi:wrench-clock"},
     calibration_time: {entity_category: "config", icon: "mdi:wrench-clock"},
     co2: {device_class: "carbon_dioxide", state_class: "measurement"},
+    color_temp_startup: {entity_category: "config", icon: "mdi:palette"},
     comfort_temperature: {entity_category: "config", icon: "mdi:thermometer"},
     cpu_temperature: {
         device_class: "temperature",
@@ -551,6 +552,31 @@ export class HomeAssistant extends Extension {
                 }
 
                 discoveryEntries.push(discoveryEntry);
+
+                // Expose color_temp_startup as a separate number entity if present
+                const colorTempStartup = (firstExpose as zhc.Light).features
+                    .filter(isNumericExpose)
+                    .find((f) => f.name === "color_temp_startup");
+                if (colorTempStartup) {
+                    const colorTempStartupEntry: DiscoveryEntry = {
+                        type: "number",
+                        object_id: endpoint ? `color_temp_startup_${endpoint}` : "color_temp_startup",
+                        mockProperties: [{property: colorTempStartup.property, value: null}],
+                        discovery_payload: {
+                            name: endpoint ? `${colorTempStartup.label} ${endpoint}` : colorTempStartup.label,
+                            value_template: `{{ value_json.${colorTempStartup.property} }}`,
+                            command_topic: true,
+                            command_topic_prefix: endpoint,
+                            command_topic_postfix: colorTempStartup.property,
+                            min: colorTempStartup.value_min,
+                            max: colorTempStartup.value_max,
+                            ...(colorTempStartup.unit && {unit_of_measurement: colorTempStartup.unit}),
+                            ...NUMERIC_DISCOVERY_LOOKUP[colorTempStartup.name],
+                        },
+                    };
+                    discoveryEntries.push(colorTempStartupEntry);
+                }
+
                 break;
             }
             case "switch": {
